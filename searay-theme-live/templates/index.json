@@ -1,0 +1,462 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "image_banner_search_Q9Fzpb": {
+      "type": "image-banner-search",
+      "blocks": {
+        "heading_gkMbnx": {
+          "type": "heading",
+          "settings": {
+            "heading": "Search for anything...",
+            "heading_size": "h1"
+          }
+        }
+      },
+      "block_order": [
+        "heading_gkMbnx"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/chains-bracelets-subcover_resize_bfv.jpg",
+        "image_overlay_opacity": 0,
+        "image_height": "small",
+        "desktop_content_alignment": "center",
+        "color_scheme": "scheme-4",
+        "use_container": false
+      }
+    },
+    "rich_text_x8PkVt": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_JAyNtr": {
+          "type": "heading",
+          "settings": {
+            "heading": "<strong>Australia’s Chain Specialists Since the 1990s</strong>",
+            "heading_size": "h1"
+          }
+        },
+        "text_MRAKwm": {
+          "type": "text",
+          "settings": {
+            "text": "<p>For over three decades, we’ve been manufacturing, importing, and wholesaling high-quality gold chain for jewellers across Australia and New Zealand. Our expertise lies in crafting the perfect alloy blends designed for strength, lasting durability, and a finish you can trust.</p>"
+          }
+        },
+        "button_pmJaWn": {
+          "type": "button",
+          "settings": {
+            "button_label": "Shop Chain",
+            "button_link": "https://searay.net.au/collections/chains-bracelets",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        },
+        "button_LzxtRK": {
+          "type": "button",
+          "settings": {
+            "button_label": "Try our interactive chain search",
+            "button_link": "https://searay.net.au/collections/chains-bracelets",
+            "button_style_secondary": true,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_JAyNtr",
+        "text_MRAKwm",
+        "button_pmJaWn",
+        "button_LzxtRK"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
+    },
+    "1764284065211b23ce": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_1def1f7_Mk6Ci8": {
+          "type": "ai_gen_block_1def1f7",
+          "settings": {
+            "image_1": "shopify://shop_images/earrings-subcover.jpg",
+            "image_2": "shopify://shop_images/rings-subcover.jpg",
+            "image_3": "shopify://shop_images/pendants-subcover.jpg",
+            "image_4": "shopify://shop_images/Rosary_Bracelet_on_Model.jpg",
+            "columns_mobile": "2",
+            "image_gap": 8,
+            "border_radius": 0,
+            "section_padding": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_1def1f7_Mk6Ci8"
+      ],
+      "name": "4-Image Collage",
+      "settings": {}
+    },
+    "rich_text_Yfcgra": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_Pgk6DR": {
+          "type": "heading",
+          "settings": {
+            "heading": "<strong>About Searay</strong>",
+            "heading_size": "h1"
+          }
+        },
+        "text_J7WnJw": {
+          "type": "text",
+          "settings": {
+            "text": "<p>With a catalogue of more than <strong>4,500 products in stock</strong> we understand the needs of Australian jewellers because we’ve been working alongside them for decades. Our quality control is meticulous, and our service is built on long-standing relationships. Whether you’re a traditional bricks-and-mortar jeweller, a multi-store brand, or growing your online presence, Searay offers reliable stock, competitive pricing, and jewellery your customers can trust.</p><p>We work <strong>strictly with businesses only</strong>, supporting retailers and brands with the fine jewellery ranges they need to succeed.</p>"
+          }
+        },
+        "button_H7VFz4": {
+          "type": "button",
+          "settings": {
+            "button_label": "Create a wholesale account",
+            "button_link": "https://searay.net.au/pages/signing-up",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_Pgk6DR",
+        "text_J7WnJw",
+        "button_H7VFz4"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
+    },
+    "multicolumn_WkNCHk": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_6HEg4X": {
+          "type": "column",
+          "settings": {
+            "image": "shopify://shop_images/9KDBA207_model.png",
+            "title": "Solid & Semi-Solid Pieces",
+            "text": "<p>From solid gold to carefully crafted semi-solid designs, we offer a wide range of designs to suit every price point.<br/><br/></p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "column_qreVgf": {
+          "type": "column",
+          "settings": {
+            "image": "shopify://shop_images/9KDR677_model.png",
+            "title": "Distinctive Rings",
+            "text": "<p>Timelessly crafted, we focus on building a collection of rings that are ready to wear with precision in mind.</p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "column_i4iQtp": {
+          "type": "column",
+          "settings": {
+            "image": "shopify://shop_images/9KPCY020B19CM_model.png",
+            "title": "Gold Essentials",
+            "text": "<p>One of the largest selections of plain gold designs ideal for window displays and fast sell-through.<br/><br/></p>",
+            "link_label": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "column_6HEg4X",
+        "column_qreVgf",
+        "column_i4iQtp"
+      ],
+      "name": "t:sections.multicolumn.presets.name",
+      "settings": {
+        "title": "",
+        "heading_size": "h1",
+        "image_width": "full",
+        "image_ratio": "adapt",
+        "button_label": "Shop New Arrivals",
+        "button_link": "https://searay.net.au/pages/signing-up",
+        "columns_desktop": 3,
+        "column_alignment": "left",
+        "background_style": "primary",
+        "color_scheme": "scheme-1",
+        "columns_mobile": "1",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "slideshow_KcR4wn": {
+      "type": "slideshow",
+      "name": "t:sections.slideshow.presets.name",
+      "settings": {
+        "layout": "full_bleed",
+        "slide_height": "medium",
+        "slider_visual": "counter",
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "image_behavior": "none",
+        "show_text_below": true,
+        "accessibility_info": "Slideshow about our brand"
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "new-arrivals",
+        "products_to_show": 8,
+        "title": "<strong>Just Arrived</strong>",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "outline",
+        "color_scheme": "background-1",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 28,
+        "padding_bottom": 36
+      }
+    },
+    "image_with_text_DaBATj": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_RDjFXe": {
+          "type": "heading",
+          "settings": {
+            "heading": "Catalogue",
+            "heading_size": "h1"
+          }
+        },
+        "text_b8Qjyf": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Browse our online catalogue. If you can't find what you're looking for email us at info@searay.net.au. We're always creating. </p>",
+            "text_style": "body"
+          }
+        },
+        "button_aQatWY": {
+          "type": "button",
+          "settings": {
+            "button_label": "View now",
+            "button_link": "https://online.fliphtml5.com/rljrq/lngn/?1648613131635#p=1",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_RDjFXe",
+        "text_b8Qjyf",
+        "button_aQatWY"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/Screen_Shot_2025-01-13_at_10.11.38_pm.png",
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "image_first",
+        "image_behavior": "none",
+        "content_layout": "no-overlap",
+        "desktop_content_position": "top",
+        "desktop_content_alignment": "left",
+        "mobile_content_alignment": "left",
+        "section_color_scheme": "",
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "collage_nLwAXU": {
+      "type": "collage",
+      "blocks": {
+        "image_RhWFqf": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/9KOM405_1.png"
+          }
+        },
+        "product_wHLycJ": {
+          "type": "product",
+          "settings": {
+            "product": "9k-yg-solid-oval-link-diamond-bracelet-0-80mm-wide-19-5cm-bezel-set-with-1d-0-05ct-o-rings-at-16-5-18cm",
+            "second_image": false
+          }
+        },
+        "collection_8VFkWN": {
+          "type": "collection",
+          "settings": {
+            "collection": "religious-pendants"
+          }
+        }
+      },
+      "block_order": [
+        "image_RhWFqf",
+        "product_wHLycJ",
+        "collection_8VFkWN"
+      ],
+      "disabled": true,
+      "settings": {
+        "heading": "New Arrivals",
+        "heading_size": "h1",
+        "desktop_layout": "left",
+        "mobile_layout": "column",
+        "card_styles": "product-card-wrapper",
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "slideshow_W4eraX": {
+      "type": "slideshow",
+      "blocks": {
+        "slide_HHTb3B": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/9k_and_18k._yellow_and_white_gold..png",
+            "image_overlay_opacity": 0,
+            "heading": "",
+            "heading_size": "h2",
+            "subheading": "",
+            "button_label": "",
+            "link": "",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "center",
+            "color_scheme": ""
+          }
+        },
+        "slide_HBx9qx": {
+          "type": "slide",
+          "settings": {
+            "image_overlay_opacity": 0,
+            "heading": "Image slide",
+            "heading_size": "h1",
+            "subheading": "Tell your brand's story through images",
+            "button_label": "Button label",
+            "link": "",
+            "button_style_secondary": false,
+            "show_text_box": true,
+            "box_align": "middle-center",
+            "text_alignment": "center",
+            "text_alignment_mobile": "center",
+            "color_scheme": ""
+          }
+        }
+      },
+      "block_order": [
+        "slide_HHTb3B",
+        "slide_HBx9qx"
+      ],
+      "disabled": true,
+      "name": "t:sections.slideshow.presets.name",
+      "settings": {
+        "layout": "full_bleed",
+        "slide_height": "medium",
+        "slider_visual": "counter",
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "image_behavior": "none",
+        "show_text_below": true,
+        "accessibility_info": "Slideshow about our brand"
+      }
+    },
+    "image_banner_Wx4mcq": {
+      "type": "image-banner",
+      "blocks": {
+        "heading_DQJjCf": {
+          "type": "heading",
+          "settings": {
+            "heading": "Image banner",
+            "heading_size": "h1"
+          }
+        },
+        "text_qDnAin": {
+          "type": "text",
+          "settings": {
+            "text": "Give customers details about the banner image(s) or content on the template.",
+            "text_style": "body"
+          }
+        },
+        "buttons_azPnbV": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Button label",
+            "button_link_1": "",
+            "button_style_secondary_1": false,
+            "button_label_2": "Button label",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_DQJjCf",
+        "text_qDnAin",
+        "buttons_azPnbV"
+      ],
+      "disabled": true,
+      "name": "t:sections.image-banner.presets.name",
+      "settings": {
+        "image_overlay_opacity": 0,
+        "image_height": "medium",
+        "image_behavior": "none",
+        "desktop_content_position": "middle-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": true,
+        "color_scheme": "",
+        "stack_images_on_mobile": true,
+        "mobile_content_alignment": "center",
+        "show_text_below": true
+      }
+    }
+  },
+  "order": [
+    "image_banner_search_Q9Fzpb",
+    "rich_text_x8PkVt",
+    "1764284065211b23ce",
+    "rich_text_Yfcgra",
+    "multicolumn_WkNCHk",
+    "slideshow_KcR4wn",
+    "featured_collection",
+    "image_with_text_DaBATj",
+    "collage_nLwAXU",
+    "slideshow_W4eraX",
+    "image_banner_Wx4mcq"
+  ]
+}

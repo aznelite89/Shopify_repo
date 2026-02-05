@@ -1,0 +1,745 @@
+{%- assign coll = section.settings.custom_collection | default: collection -%}
+
+<section id="chain-filter" class="page-width">
+
+  <form id="FacetFiltersForm" class="facets-horizontal" method="get" action="{{ coll.url }}">
+    <div class="facets-body">
+      {% assign desired_order = "Color|Alloy|Availability|Length|Weight|Price|Width|Design" | split: "|" %}
+      {% for label in desired_order %}
+        {% assign filter = coll.filters | where: "label", label | first %}
+        {% if filter %}
+          <div class="facet-row" data-label="{{ filter.label }}">
+            <span class="facet-label">{{ filter.label }}:</span>
+
+            {% if filter.type == 'list' and filter.label == 'Design' %}
+
+              {%- comment -%} 在这里先定义 design_groups，务必写在 <div> 之外 {%- endcomment -%}
+              {% assign design_groups = "
+                Anchor:Anchor Chains:Anchor,
+                Ball:Ball Chains:Ball,
+                Belcher:Belcher Chains:Belcher,
+                Birdseye:Birdseye / Tiger Eye Chains:Birdseye,
+                Box:Box Chains:Box,
+                Trace | Cable:Cable | Trace | Oval Link Chains:Cable,
+                Curb:Curb Chains:Curb,
+                Fancy:Fancy Chains P/G:Fancy,
+                Figaro:Figaro Chains:Figaro,
+                Franco:Franco Chains:Franco,
+                ID Bracelets: ID Bracelets: ID Bracelets,
+                Wheat | Round:Magic Chains:Round,
+                Omega:Omega Chains:Omega,
+                Paperclip:Paperclip Chains:Paperclip,
+                Rope:Rope Chains:Rope,
+                Rosary:Rosary Chains:Rosary,
+              " | split: "," %}
+            
+              <div class="facet-values">
+                {% for grp in design_groups %}
+                  {% assign parts    = grp | split: ":" %}
+                  {% assign key      = parts[0] | strip %}
+                  {% assign raw_label = parts[1] | strip %}
+                  {% assign image_key = parts[2] | strip %}
+                  {% assign item     = filter.values | where: "label", raw_label | first %}
+                  {% if item %}
+                    <label class="facet-value design-value">
+                      <input
+                        type="checkbox"
+                        name="{{ filter.param_name }}"
+                        value="{{ item.value }}"
+                      >
+                      <span class="design-icon">
+                        <img
+                          src="{{ image_key | append: '.png' | asset_url }}"
+                          alt="{{ image_key }}"
+                          width="50"
+                          height="100"
+                        >
+                      </span>
+                      <span class="design-label">{{ key }} ({{ item.count }})</span>
+                  
+                    </label>
+                  {% endif %}
+                {% endfor %}
+              </div>            
+
+
+
+            
+            {% elsif filter.type == 'list' and filter.label == 'Color' %}
+              {%- comment -%} 只显示三张图：黄、白、玫，最后把 Black 当作 Other{%- endcomment -%}
+              {% assign primary = "Yellow,White,Rose" | split: "," %}
+            
+              <div class="facet-values">
+                {%- comment -%} 第一遍：渲染 Yellow/White/Rose{%- endcomment -%}
+                {% for color in primary %}
+                  {% assign item = filter.values | where: "label", color | first %}
+                  {% if item %}
+                    <label class="facet-value color-img-value">
+                      <input type="checkbox" name="{{ filter.param_name }}" value="{{ item.value }}">
+                      {% case color %}
+                        {% when "Yellow" %}
+                          <img src="{{ 'Yellow Gold.png' | asset_url }}"
+                               alt="Yellow" width="40" height="40">
+                        {% when "White" %}
+                          <img src="{{ 'White Gold.png' | asset_url }}"
+                               alt="White" width="40" height="40">
+                        {% when "Rose" %}
+                          <img src="{{ 'Rose Gold.png' | asset_url }}"
+                               alt="Rose" width="40" height="40">
+                      {% endcase %}
+                      <span>{{ color }} ({{ item.count }})</span>
+                    </label>
+                  {% endif %}
+                {% endfor %}
+            
+                {%- comment -%} 最后把 Black 作为 Other 来渲染{%- endcomment -%}
+                {% assign black = filter.values | where: "label", "Black" | first %}
+                {% if black %}
+                  <label class="facet-value color-img-value">
+                    <input type="checkbox" name="{{ filter.param_name }}" value="{{ black.value }}">
+                    <span class="color-block"></span>
+                    <span>Other ({{ black.count }})</span>
+                  </label>
+                {% endif %}
+              </div>
+
+
+
+
+            {% elsif filter.type == 'list' and filter.label == 'Length' %}
+              {% assign mins = nil %}
+              {% assign maxs = 0 %}
+              {% for v in filter.values %}
+                {% if v.value contains '-' %}
+                  {% assign parts = v.value | remove:'cm' | split:'-' %}
+                  {% assign lo = parts[0] | plus:0 %}
+                  {% assign hi = parts[1] | plus:0 %}
+                  {% if mins == nil or lo < mins %}{% assign mins = lo %}{% endif %}
+                  {% if hi > maxs %}{% assign maxs = hi %}{% endif %}
+                {% endif %}
+              {% endfor %}
+
+
+              <div class="length-slider-row">
+                 <div class="length-inputs">  
+                  <label>Min (cm):
+                    <input type="number" id="length-min-ui" step="0.5" min="{{ mins }}" max="{{ maxs }}">
+                  </label>
+                  <label>Max (cm):
+                    <input type="number" id="length-max-ui" step="0.5" min="{{ mins }}" max="{{ maxs }}">
+                  </label>
+                </div> 
+                <div id="length-slider" style="margin-top: 50px; margin-bottom: 20px;"  data-min="{{ mins }}" data-max="{{ maxs }}"></div>
+              </div>
+              <input type="hidden" id="length-min" value="">
+              <input type="hidden" id="length-max" value="">
+              <div class="facet-values" style="margin-top:1.5rem;">
+                {% for v in filter.values %}
+                  {% if v.value contains 'Adjustable' or v.value contains '+' %}
+                    <label class="facet-value">
+                      <input type="checkbox" name="{{ filter.param_name }}" value="{{ v.value }}">
+                      {{ v.label }} ({{ v.count }})
+                    </label>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div id="length-hidden-ranges" style="display:none;">
+                {% for v in filter.values %}
+                  {% if v.value contains '-' %}
+                    <input type="checkbox" class="js-length-range" name="{{ filter.param_name }}" value="{{ v.value }}">
+                  {% endif %}
+                {% endfor %}
+              </div>
+
+            {% elsif filter.type == 'list' %}
+              <div class="facet-values">
+                {% for v in filter.values %}
+                  <label class="facet-value">
+                    <input type="checkbox" name="{{ filter.param_name }}" value="{{ v.value }}">
+                    <span>{{ v.label }} ({{ v.count }})</span>
+                  </label>
+                {% endfor %}
+              </div>
+
+            {% elsif filter.type == 'price_range' %}
+              <div class="facet-values">
+                <label>Min:
+                  <input type="number" name="{{ filter.min_value.param_name }}" min="{{ filter.range_min }}" max="{{ filter.range_max }}">
+                </label>
+                <label>Max:
+                  <input type="number" name="{{ filter.max_value.param_name }}" min="{{ filter.range_min }}" max="{{ filter.range_max }}">
+                </label>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="facets-actions">
+      <button type="submit" class="button button--primary">Search</button>
+      <button type="button" id="clear-all" class="button button--secondary">Clear all selections</button>
+    </div>
+  </form>
+
+  <div id="applied-summary" style="margin:1rem 0; font-size:1.5rem;"></div>
+
+  <style>
+    /* —— 新增：表格布局相关 —— */
+    #chain-filter .facets-horizontal {
+      display: block; margin: 0; padding: 0;
+    }
+    #chain-filter .facets-body {
+      display: table;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #chain-filter .facet-row {
+      display: table-row;
+    }
+    #chain-filter .facet-label {
+      display: table-cell;
+      vertical-align: top;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      white-space: nowrap;
+      width: 160px;
+    }
+    #chain-filter .facet-values,
+    #chain-filter .length-slider-row {
+      display: table-cell;
+      vertical-align: middle;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ddd;
+    }
+
+    /* —— 原有样式（未动） —— */
+
+    #chain-filter {
+      font-family: inherit;
+      font-size: 15px;
+    }
+
+    /* 保留 grid 布局 */
+    #chain-filter .facet-values {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.75rem 1rem;
+    }
+    #chain-filter .facet-value {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: background 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+    #chain-filter .facet-value:hover {
+      background: #f9f9f9;
+      border-color: #ccc;
+    }
+
+    /* 滑块尺寸 */
+    #chain-filter .length-slider-row {
+      width: 100%;
+      height: 100px;
+      max-width: none;
+      margin: 0;
+    }
+    #chain-filter #length-slider {
+      width: 100%;
+      height: 8px;
+      margin-top: 2rem;
+    }
+
+    /* noUiSlider 主题 */
+    .noUi-target {
+      background: #e0e0e0;
+      border-radius: 6px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .noUi-connect {
+      background: #007bff;
+      border-radius: 6px;
+    }
+    .noUi-handle {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      box-shadow: 0 0 2px rgba(0,0,0,0.3);
+      width: 18px;
+      height: 18px;
+      top: -6px;
+      cursor: pointer;
+    }
+    .noUi-handle:hover,
+    .noUi-handle:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+    }
+    .noUi-tooltip {
+      font-size: 13px;
+      padding: 4px 6px;
+      background: #333;
+      color: #fff;
+      border-radius: 4px;
+      bottom: 130%;
+      transform: translateY(-4px);
+    }
+
+    /* —— Color 专属 —— */
+    #chain-filter .facet-row[data-label="Color"] .facet-values {
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      justify-items: center;
+    }
+    #chain-filter .facet-row[data-label="Color"] .facet-value {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      width: 100px;
+      height: 100px;
+      text-align: center;
+      position: relative;
+    }
+    #chain-filter .facet-row[data-label="Color"] .color-block {
+      display: block;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      margin-bottom: 0.25rem;
+    }
+    #chain-filter .facet-row[data-label="Color"] .facet-value span:last-child {
+      font-size: 13px;
+    }
+    #chain-filter .facet-row[data-label="Color"] .facet-value input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+    }
+    #chain-filter .facet-row[data-label="Color"] .facet-value.checked {
+      background: rgba(0,123,255,0.1);
+      border-color: #007bff;
+    }
+    #chain-filter .facet-row[data-label="Color"] .facet-value.checked .color-block {
+      border-color: #007bff;
+    }
+
+    /* Price 行 input 间距 */
+    #chain-filter .facet-row[data-label="Price"] .facet-values label {
+      margin-right: 1.5rem;
+    }
+
+    /* 按钮组 */
+    #chain-filter .facets-actions {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    #chain-filter .facets-actions button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border-radius: 6px;
+      min-width: 160px;
+      cursor: pointer;
+    }
+    #chain-filter .facets-actions .button--primary {
+      background: #000;
+      color: #fff;
+      border: none;
+    }
+    #chain-filter .facets-actions .button--secondary {
+      background: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+    }
+
+    /* 已选汇总 */
+    #applied-summary {
+      margin: 1rem 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.6;
+      color: #333;
+      text-align: center;
+    }
+
+    #chain-filter .facet-row[data-label="Length"] > .facet-values {
+      display: none !important;
+    }
+
+
+    /* —— Design: icon + label 格子 —— */
+  #chain-filter .facet-row[data-label="Design"] .facet-values {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 1rem;
+    justify-items: center;
+  }
+
+  #chain-filter .facet-row[data-label="Design"] .design-value {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  #chain-filter .facet-row[data-label="Design"] .design-icon img {
+    width: 50px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+  }
+
+  #chain-filter .facet-row[data-label="Design"] .design-label {
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  /* hover & checked */
+  #chain-filter .facet-row[data-label="Design"] .design-value:hover {
+    background: #f9f9f9;
+    border-color: #ccc;
+  }
+  #chain-filter .facet-row[data-label="Design"] .design-value.checked {
+    background: rgba(0,123,255,0.1);
+    border-color: #007bff;
+  }
+  #chain-filter .facet-row[data-label="Design"] .design-value input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+  }
+
+  /* 1. 移除 Price label 的多余右边距 */
+  #chain-filter .facet-row[data-label="Price"] .facet-values label {
+    margin-right: 0 !important;
+  }
+
+  /* 2. 美化 Price 输入框 */
+  #chain-filter .facet-row[data-label="Price"] .facet-values input[type="number"] {
+    width: 150px;           /* 根据需要调整宽度 */
+    padding: 0.4rem 0.6rem;  /* 内边距 */
+    border: 1px solid #ccc; /* 边框 */
+    border-radius: 4px;     /* 圆角 */
+    font-size: 1rem;        /* 字体大小 */
+    line-height: 1.2;
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  /* 3. 隐藏数字输入框的上下箭头（spinner） */
+  #chain-filter .facet-row[data-label="Price"] .facet-values input[type="number"]::-webkit-inner-spin-button,
+  #chain-filter .facet-row[data-label="Price"] .facet-values input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  #chain-filter .facet-row[data-label="Price"] .facet-values input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  /* 让 Color 的 img 为 40×40，并加个圆角 */
+  #chain-filter .facet-row[data-label="Color"] .color-img-value img {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  /* 保留原有 .color-block 样式，其他颜色仍然显示空圈 */
+  #chain-filter .facet-row[data-label="Color"] .color-img-value .color-block {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+  }
+
+  /* 保证文字行高、间距不变 */
+  #chain-filter .facet-row[data-label="Color"] .color-img-value span:last-child {
+    margin-top: 0.5rem;
+    display: block;
+  }
+
+  /* 让图片选中时也高亮 */
+  #chain-filter .facet-row[data-label="Color"] .color-img-value.checked img {
+    outline: 2px solid #007bff;
+    border-radius: 6px;
+  }
+  /* 高亮整个被选中的 Color 瓦片 */
+  #chain-filter .facet-row[data-label="Color"] .facet-value.checked {
+    background: rgba(0,123,255,0.1);
+    border-color: #007bff !important;
+  }
+
+  /* （可选）给被选中的图片加个蓝色边框 */
+  #chain-filter .facet-row[data-label="Color"] .color-img-value.checked img {
+    outline: 2px solid #007bff;
+  }
+
+/* Length 输入框和 slider 的排版优化 */
+
+/* 默认：大屏时，让输入框和 slider 上下有间距 */
+#chain-filter .length-inputs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem; /* 👉 slider 前空出空间 */
+}
+
+  /* 输入框样式保持统一 */
+  #chain-filter .length-inputs input[type="number"] {
+    width: 120px;
+    padding: .35rem .5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: .95rem;
+    box-sizing: border-box;
+  }
+
+  /* 小屏时：输入框改为一行一个，100% 宽度，左右不留白 */
+  @media (max-width: 640px) {
+    #chain-filter .length-inputs {
+      flex-direction: column;
+      align-items: stretch;
+      gap: .75rem;
+      margin-bottom: 1rem; /* 和 slider 之间留点空间 */
+    }
+    #chain-filter .length-inputs input[type="number"] {
+      width: 100%;  /* 铺满容器 */
+    }
+  }
+
+
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        if (params.getAll(cb.name).includes(cb.value)) {
+          cb.checked = true;
+        }
+      });
+
+      const priceMinInput = document.querySelector('input[name="filter.v.price.gte"]');
+      const priceMaxInput = document.querySelector('input[name="filter.v.price.lte"]');
+      if (priceMinInput) priceMinInput.value = params.get('filter.v.price.gte') || '';
+      if (priceMaxInput) priceMaxInput.value = params.get('filter.v.price.lte') || '';
+
+      const sliderEl = document.getElementById('length-slider');
+      const minIn = document.getElementById('length-min');
+      const maxIn = document.getElementById('length-max');
+      const form = document.getElementById('FacetFiltersForm');
+      if (sliderEl && minIn && maxIn && form) {
+        const minVal = parseFloat(sliderEl.dataset.min);
+        const maxVal = parseFloat(sliderEl.dataset.max);
+        const lowUrl = params.get('filter.p.m.custom.length_min');
+        const highUrl = params.get('filter.p.m.custom.length_max');
+        const startMin = lowUrl ? parseFloat(lowUrl) : minVal;
+        const startMax = highUrl ? parseFloat(highUrl) : maxVal;
+
+        noUiSlider.create(sliderEl, {
+          start: [startMin, startMax],
+          connect: true,
+          step: 0.5,
+          range: { min: minVal, max: maxVal },
+          tooltips: [true, true],
+          format: {
+            to: v => v.toFixed(1) + 'cm',
+            from: v => Number(v.replace('cm', ''))
+          }
+        });
+
+        minIn.value = startMin;
+        maxIn.value = startMax;
+
+        const minUi = document.getElementById('length-min-ui');
+        const maxUi = document.getElementById('length-max-ui');
+
+        if (minUi && maxUi) {
+   
+          minUi.value = (+startMin).toFixed(1);
+          maxUi.value = (+startMax).toFixed(1);
+
+          sliderEl.noUiSlider.on('update', ([low, high]) => {
+            if (minUi) minUi.value = parseFloat(low).toFixed(1);
+            if (maxUi) maxUi.value = parseFloat(high).toFixed(1);
+          });
+
+          const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+          const applyFromInputs = () => {
+            let a = parseFloat(minUi.value);
+            let b = parseFloat(maxUi.value);
+            if (isNaN(a)) a = minVal;
+            if (isNaN(b)) b = maxVal;
+            a = clamp(a, minVal, maxVal);
+            b = clamp(b, minVal, maxVal);
+            if (a > b) b = a;         
+            sliderEl.noUiSlider.set([a, b]);
+          };
+          minUi.addEventListener('change', applyFromInputs);
+          maxUi.addEventListener('change', applyFromInputs);
+        }
+        sliderEl.noUiSlider.on('set', ([low, high]) => {
+          low = parseFloat(low); high = parseFloat(high);
+          document.querySelectorAll('.js-length-range').forEach(cb => {
+            const [lo, hi] = cb.value.replace('cm', '').split('-').map(parseFloat);
+            cb.checked = !(hi < low || lo > high);
+          });
+          // —— 新增：Adjustable 选项逻辑 —— 
+          document
+            .querySelectorAll('.facet-row[data-label="Length"] .facet-values input[type="checkbox"]')
+            .forEach(cb => {
+              if (cb.value.includes('Adjustable')) {
+                const m = cb.value.match(/(\d+(\.\d+)?)/);
+                if (m) {
+                  const val = parseFloat(m[0]);
+                  cb.checked = val >= low && val <= high;
+                }
+              }
+            });
+
+
+          
+          minIn.value = low;
+          maxIn.value = high;
+        });
+
+        form.addEventListener('submit', () => {
+          if (Array.from(document.querySelectorAll('.js-length-range')).some(cb => cb.checked)) {
+            minIn.name = 'filter.p.m.custom.length_min';
+            maxIn.name = 'filter.p.m.custom.length_max';
+          } else {
+            minIn.removeAttribute('name');
+            maxIn.removeAttribute('name');
+          }
+        });
+      }
+
+      // —— 构造已选汇总 —— 
+      const desiredOrder = ["Color", "Alloy", "Availability", "Length", "Weight", "Price", "Width", "Design"];
+      const summaryParts = [];
+      
+      desiredOrder.forEach(label => {
+        let partsForLabel = [];
+      
+        if (label === "Availability") {
+          // 处理 In stock / Out of stock
+          params.getAll('filter.v.availability').forEach(v => {
+            if (v === 'true' || v === '1') partsForLabel.push('In stock');
+            if (v === 'false' || v === '0') partsForLabel.push('Out of stock');
+          });
+      
+        } else if (label === "Price") {
+          const min = params.get('filter.v.price.gte');
+          const max = params.get('filter.v.price.lte');
+          if (min) partsForLabel.push(`Min Price: ${min}`);
+          if (max) partsForLabel.push(`Max Price: ${max}`);
+      
+        } else if (label === "Length") {
+          const low = params.get('filter.p.m.custom.length_min');
+          const high= params.get('filter.p.m.custom.length_max');
+          if (low && high) partsForLabel.push(`Length: ${low}–${high}cm`);
+          // 加上所有 Adjustable
+          params.getAll('filter.p.m.custom.length').forEach(v => {
+            if (v.includes('Adjustable')) partsForLabel.push(v);
+          });
+      
+        } else {
+          // 通用处理 list 类型的 filter
+          const paramMap = {
+            "Design":  'filter.p.product_type',
+            "Alloy":   'filter.v.option.alloy',
+            "Color":   'filter.p.m.custom.color',            // 如果实际 param_name 不一样请改这里
+            "Weight":  'filter.p.m.custom.weight_range',
+            "Width":   'filter.p.m.custom.width_range'
+          };
+          const p = paramMap[label];
+          if (p) {
+            params.getAll(p).forEach(v => partsForLabel.push(v));
+          }
+        }
+      
+        if (partsForLabel.length) {
+          // 去重后拼成一条 summary
+          const uniq = [...new Set(partsForLabel)];
+          summaryParts.push(`${label}: ${uniq.join('， ')}`);
+        }
+      });
+      
+      // 渲染到页面
+      const summaryEl = document.getElementById('applied-summary');
+      summaryEl.innerHTML = summaryParts.length
+        ? `<strong>You have selected：</strong>${summaryParts.join('； ')}`
+        : '';
+
+      document.getElementById('clear-all').addEventListener('click', () => {
+        location.href = '{{ coll.url }}';
+      });
+
+      document.querySelectorAll('.facet-row[data-label="Color"] .facet-value')
+      .forEach(wrapper => {
+        const cb = wrapper.querySelector('input[type="checkbox"]');
+        // 先把初始选中态打上
+        if (cb.checked) wrapper.classList.add('checked');
+        // 点击切换时打/去 .checked
+        cb.addEventListener('change', () => {
+          wrapper.classList.toggle('checked', cb.checked);
+        });
+      });
+
+      document.querySelectorAll(
+        '#chain-filter .facet-row[data-label="Design"] .design-value'
+      ).forEach(wrapper => {
+        const cb = wrapper.querySelector('input[type="checkbox"]');
+        if (cb.checked) wrapper.classList.add('checked');
+        cb.addEventListener('change', () => {
+          wrapper.classList.toggle('checked', cb.checked);
+        });
+      }); 
+
+      
+
+    });
+
+    const form = document.getElementById('FacetFiltersForm');
+
+    form.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault(); 
+      }
+    });
+
+  </script>
+
+</section>
+
+{% schema %}
+{
+  "name": "Searay Filters",
+  "settings": [{ "type": "collection", "id": "custom_collection", "label": "Collection (blank=current)" }],
+  "presets": [{ "name": "Searay Filters" }]
+}
+{% endschema %}

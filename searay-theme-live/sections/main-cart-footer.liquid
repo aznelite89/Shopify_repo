@@ -1,0 +1,410 @@
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'component-totals.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div
+  class="gradient color-{{ section.settings.color_scheme }}{% if cart == empty %} is-empty{% endif %}"
+  id="main-cart-footer"
+  data-id="{{ section.id }}"
+  data-min-cents="15000"
+  data-total-cents="{{ cart.total_price }}"
+>
+  <div class="page-width">
+    <div class="cart__footer isolate section-{{ section.id }}-padding">
+
+      <div  class="cart__footer-header">
+        <h1>Prices are based on estimated weights and may vary. For final pricing please wait for your invoice to be issued via email.</h1>
+      </div>
+      <div class="cart__blocks">
+        {% for block in section.blocks %}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              {% render block %}
+            {%- when 'subtotal' -%}
+              <div class="js-contents" {{ block.shopify_attributes }}>
+                <div>
+                  {%- if cart.cart_level_discount_applications.size > 0 -%}
+                    <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
+                      {%- for discount in cart.cart_level_discount_applications -%}
+                        <li class="discounts__discount discounts__discount--position">
+                          {{- 'icon-discount.svg' | inline_asset_content -}}
+                          {{ discount.title | escape }}
+                          (-{{ discount.total_allocated_amount | money }})
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+                </div> 
+                <div class="totals" data-cart-total-cents="{{ cart.total_price }}">
+                  <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>
+                  <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
+                </div>
+           
+                <small class="tax-note caption-large rte">
+                  {%- if cart.duties_included and cart.taxes_included -%}
+                    {%- if shop.shipping_policy.body == blank -%}
+                      {{ 'sections.cart.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
+                    {%- else -%}
+                      {{
+                        'sections.cart.duties_and_taxes_included_shipping_at_checkout_with_policy_html'
+                        | t: link: shop.shipping_policy.url
+                      }}
+                    {%- endif -%}
+                  {%- elsif cart.duties_included == false and cart.taxes_included -%}
+                    {%- if shop.shipping_policy.body == blank -%}
+                      {{ 'sections.cart.taxes_included_shipping_at_checkout_without_policy' | t }}
+                    {%- else -%}
+                      {{
+                        'sections.cart.taxes_included_shipping_at_checkout_with_policy_html'
+                        | t: link: shop.shipping_policy.url
+                      }}
+                    {%- endif -%}
+                  {%- elsif cart.duties_included and cart.taxes_included == false -%}
+                    {%- if shop.shipping_policy.body == blank -%}
+                      {{ 'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+                    {%- else -%}
+                      {{
+                        'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                        | t: link: shop.shipping_policy.url
+                      }}
+                    {%- endif -%}
+                  {%- elsif cart.duties_included == false and cart.taxes_included == false -%}
+                    {%- if shop.shipping_policy.body == blank -%}
+                      {{ 'sections.cart.taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+                    {%- else -%}
+                      {{
+                        'sections.cart.taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                        | t: link: shop.shipping_policy.url
+                      }}
+                    {%- endif -%}
+                  {%- endif -%}
+                </small>
+              </div>
+            {%- else -%}
+
+              {%- if settings.show_cart_note -%}
+                <cart-note class="cart__note field">
+                  <label for="Cart-note">{{ 'sections.cart.note' | t }}</label>
+                  <textarea
+                    class="text-area field__input"
+                    name="note"
+                    form="cart"
+                    id="Cart-note"
+                    placeholder="{{ 'sections.cart.note' | t }}"
+                  >{{ cart.note }}</textarea>
+                </cart-note>
+              {%- endif -%}
+
+              {%- assign min_cents = 15000 -%}
+              {%- assign below_min = false -%}
+
+              {%- if cart.total_price < min_cents -%}
+                {%- assign below_min = true -%}
+              {%- endif -%}
+
+              <div class="cart__ctas" {{ block.shopify_attributes }}>
+                <button
+                  type="submit"
+                  id="checkout"
+                  class="cart__checkout-button button"
+                  name="checkout"
+                  style="margin-top: 50px"
+                  form="cart"
+                  {% if cart == empty or below_min %}
+                    disabled aria-disabled="true"
+                  {% endif %}
+                >
+                  {{ 'sections.cart.checkout' | t }}
+                </button>
+              </div>
+
+              {%- if additional_checkout_buttons and below_min == false -%}
+                <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+                  {{ content_for_additional_checkout_buttons }}
+                </div>
+              {%- endif -%}
+          {%- endcase -%}
+        {% endfor %}
+
+       <div id="min-order-modal" class="min-order-modal" aria-hidden="true">
+          <div class="min-order-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="min-order-title">
+            <h3 id="min-order-title" class="h4" style="margin-top:0">Minimum order</h3>
+            <p class="min-order-modal__msg" data-msg>
+              Our minimum order is $150. Please add more items to your cart before checking out.
+            </p>
+            <div class="min-order-modal__actions">
+              <button type="button" class="button" data-close-modal>OK</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="cart-errors"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.min-order-modal[hidden]{display:none}
+.min-order-modal{
+  position:fixed; inset:0; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(0,0,0,.45); z-index:9999;
+}
+.min-order-modal[open]{display:flex}
+.min-order-modal__dialog{
+  background:#fff; padding:24px; border-radius:12px;
+  width:min(92vw,520px); max-width:520px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+.min-order-modal__actions{margin-top:16px; display:flex; justify-content:flex-end; gap:8px}
+
+</style>
+<script>
+(function(){
+  if (window.__minOrderInterceptHardened) return;
+  window.__minOrderInterceptHardened = true;
+
+  const THRESHOLD = 15000; // $150 -> 15000 cents
+
+  /* ---------- 弹窗 ---------- */
+  function openMinModal(msg){
+    const m = document.getElementById('min-order-modal');
+    if (!m) return;
+    if (msg) {
+      const p = m.querySelector('.min-order-modal__msg');
+      if (p) p.textContent = msg;
+    }
+    m.setAttribute('open',''); m.removeAttribute('aria-hidden');
+  }
+  document.addEventListener('click', e=>{
+    if (e.target.closest('#min-order-modal [data-close-modal]')) {
+      e.preventDefault();
+      const m = document.getElementById('min-order-modal');
+      if (m){ m.removeAttribute('open'); m.setAttribute('aria-hidden','true'); }
+    }
+  });
+
+  /* ---------- 折后价（同步“快查” + 异步“精查”） ---------- */
+  function toCents(s){
+    if (!s) return NaN;
+    const m = String(s).match(/-?[\d.,]+/); if (!m) return NaN;
+    let t=m[0], i=Math.max(t.lastIndexOf(','), t.lastIndexOf('.'));
+    let A,B; if (i>=0){ A=t.slice(0,i).replace(/[.,]/g,''); B=t.slice(i+1); } else { A=t; B='00'; }
+    if (B.length===1) B+='0'; if (B.length>2) B=B.slice(0,2);
+    const v = parseInt(A||'0',10)*100 + parseInt(B||'0',10);
+    return Number.isFinite(v) ? v : NaN;
+  }
+  function findTotalsBox(){
+    const d = document.querySelector('.totals'); if (d) return d;
+    const xp = document.evaluate(
+      "//*[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'estimated total')]",
+      document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null
+    ).singleNodeValue;
+    return xp ? (xp.closest('.totals') || xp.parentElement) : null;
+  }
+  function isVisible(el){
+    if (!el) return false;
+    const r = el.getBoundingClientRect(); if (r.width<=0||r.height<=0) return false;
+    const cs = getComputedStyle(el);
+    return !(cs.display==='none'||cs.visibility==='hidden'||cs.opacity==='0');
+  }
+  function hasStrike(el){
+    let n = el;
+    for (let k=0;k<3 && n;k++, n=n.parentElement){
+      const cs = getComputedStyle(n);
+      if ((cs.textDecorationLine||'').includes('line-through')) return true;
+      if (n.tagName==='S' || n.tagName==='DEL') return true;
+      if (/\b(compare|was-price|strike|strikethrough|old)\b/i.test(n.className||'')) return true;
+    }
+    return false;
+  }
+  // 从“Estimated total”区域抓可见非删除线金额，取最小（通常是折后价）—同步快查
+  // 替换原函数：readTotalsDisplayedCentsSync
+  function readTotalsDisplayedCentsSync(){
+    // 1) AIOD/CSAPPS 渲染的折后应付总额
+    const aiod = document.querySelector('.csapps-cart-total .money');
+    if (aiod){
+      const v = toCents(aiod.textContent);
+      if (Number.isFinite(v)) {
+        console.debug('[min-order] picked .csapps-cart-total .money =', v);
+        return v;
+      }
+    }
+
+    // 2) 主题自带 totals 区的应付总额
+    const theme = document.querySelector('.totals__total-value .money');
+    if (theme){
+      const v = toCents(theme.textContent);
+      if (Number.isFinite(v)) {
+        console.debug('[min-order] picked .totals__total-value .money =', v);
+        return v;
+      }
+    }
+
+    // 3) 兜底：用 liquid 注入的 total_cents
+    const root = document.getElementById('main-cart-footer');
+    const ds = root ? parseInt(root.dataset.totalCents || '', 10) : NaN;
+    if (Number.isFinite(ds)) {
+      console.debug('[min-order] picked data-total-cents =', ds);
+      return ds;
+    }
+
+    // 找不到就返回 NaN（让上层去 /cart.js 再查），不要返回 0 以免误判
+    console.warn('[min-order] no DOM total found');
+    return NaN;
+  }
+
+
+  function readYouSaveCentsSync(){
+    const root = document.getElementById('main-cart-footer') || document;
+    const node = [...root.querySelectorAll('*')].find(n => /you\s*save/i.test(n.textContent||''));
+    return node ? toCents(node.textContent) : NaN;
+  }
+  async function fetchCartJsCents(){
+    try{
+      const r = await fetch('/cart.js', { headers:{ 'Accept':'application/json' }, credentials:'same-origin' });
+      const c = await r.json();
+      return typeof c.total_price === 'number' ? c.total_price : NaN;
+    }catch{ return NaN; }
+  }
+  // 异步精查（用于正常点击/提交时）
+  async function effectiveCents(){
+    const box = readTotalsDisplayedCentsSync();
+    if (Number.isFinite(box)) return box;
+    const [js, save] = await Promise.all([fetchCartJsCents(), Promise.resolve(readYouSaveCentsSync())]);
+    if (Number.isFinite(js) && Number.isFinite(save) && js>save) return js - save;
+    return Number.isFinite(js) ? js : 0;
+  }
+  // 同步快查（用于拦截编程式 form.submit()）
+  function shouldBlockSync(){
+    const v = readTotalsDisplayedCentsSync();
+    return Number.isFinite(v) ? v <= THRESHOLD : false;
+  }
+  async function shouldBlockAsync(){ return (await effectiveCents()) <= THRESHOLD; }
+
+  const triggerSel = [
+    'button[name="checkout"]',
+    '.additional-checkout-buttons button',
+    '.additional-checkout-buttons a',
+    'a[href$="/checkout"]',
+    'form[action*="/checkout"] [type="submit"]'
+  ].join(',');
+
+  /* ---------- 提前拦截 pointerdown + click（只在不达标时阻止） ---------- */
+  ['pointerdown','click'].forEach(evt=>{
+    document.addEventListener(evt, async (e)=>{
+      const t = e.target.closest(triggerSel);
+      if (!t) return;
+      if (await shouldBlockAsync()){
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation && e.stopImmediatePropagation();
+        openMinModal();
+      }
+    }, true); // capture：抢在其它监听器之前
+  });
+
+  /* ---------- submit 拦截（表单路径） ---------- */
+  document.addEventListener('submit', async (e)=>{
+    const form = e.target;
+    const goingCheckout =
+      /\/checkout/.test((form.getAttribute('action')||'').toLowerCase()) ||
+      (e.submitter && (e.submitter.name==='checkout' || /\/checkout$/.test(e.submitter.formAction||'')));
+    if (!goingCheckout) return;
+
+    if (await shouldBlockAsync()){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation && e.stopImmediatePropagation();
+      openMinModal();
+    }
+  }, true);
+
+  /* ---------- 拦截编程式 form.submit()（很多脚本用这个绕开 submit 事件） ---------- */
+  const _origSubmit = HTMLFormElement.prototype.submit;
+  HTMLFormElement.prototype.submit = function(){
+    const action = (this.getAttribute('action')||'').toLowerCase();
+    if (/\/checkout|\/cart/.test(action) && shouldBlockSync()){
+      openMinModal();
+      return; // 阻止提交
+    }
+    return _origSubmit.apply(this, arguments);
+  };
+
+  // 调试：应打印 13690
+  effectiveCents().then(v => console.debug('[min-order] effective cents =', v));
+})();
+</script>
+
+
+
+
+{% schema %}
+{
+  "name": "t:sections.main-cart-footer.name",
+  "class": "cart__footer-wrapper",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },    
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subtotal",
+      "name": "t:sections.main-cart-footer.blocks.subtotal.name",
+      "limit": 1
+    },
+    {
+      "type": "buttons",
+      "name": "t:sections.main-cart-footer.blocks.buttons.name",
+      "limit": 1
+    },
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,279 @@
+{% comment %}
+  Image Banner with Search – Clean Version
+  - One working search box
+  - Transparent button styled like "Shop Chain"
+  - Larger input font
+{% endcomment %}
+
+{{ 'section-image-banner.css' | asset_url | stylesheet_tag }}
+
+{%- if section.settings.image_height == 'adapt' and section.settings.image != blank -%}
+  {%- style -%}
+    @media screen and (max-width: 749px) {
+      #Banner-{{ section.id }}::before,
+      #Banner-{{ section.id }} .banner__media::before,
+      #Banner-{{ section.id }}:not(.banner--mobile-bottom) .banner__content::before {
+        padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;
+        content: '';
+        display: block;
+      }
+    }
+    @media screen and (min-width: 750px) {
+      #Banner-{{ section.id }}::before,
+      #Banner-{{ section.id }} .banner__media::before {
+        padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;
+        content: '';
+        display: block;
+      }
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
+{%- style -%}
+  #Banner-{{ section.id }} {
+    margin-bottom: 40px;
+  }
+  #Banner-{{ section.id }}::after {
+    opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
+  }
+  #Banner-{{ section.id }} .banner__box {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  #searchInput::placeholder {
+    color: white;
+    opacity: 1; 
+  }
+{%- endstyle -%}
+
+<div
+  id="Banner-{{ section.id }}"
+  class="banner banner--content-align-{{ section.settings.desktop_content_alignment }} banner--{{ section.settings.image_height }}"
+>
+  {%- if section.settings.image != blank -%}
+    <div class="banner__media media">
+      {{
+        section.settings.image
+        | image_url: width: 3840
+        | image_tag:
+          width: section.settings.image.width,
+          height: image_height,
+          class: image_class,
+          sizes: sizes,
+          widths: widths,
+          fetchpriority: fetch_priority
+      }}
+    </div>
+  {%- endif -%}
+
+  <div class="banner__content banner__content--middle-center page-width">
+    <div class="{% if section.settings.use_container %}banner__box content-container content-container--full-width-mobile{% else %}banner__box{% endif %} color-{{ section.settings.color_scheme }} gradient">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'heading' -%}
+            <h2 class="banner__heading inline-richtext {{ block.settings.heading_size }}" {{ block.shopify_attributes }}>
+              {{ block.settings.heading }}
+            </h2>
+            <form action="/search" method="get" style="margin-top: 20px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <input
+                id="searchInput"
+                type="search"
+                name="q"
+                placeholder="Search products..."
+                style="
+                  padding: 14px 20px;
+                  font-size: 16px;
+                  border: 1px solid white;
+                  border-radius: 6px;
+                  width: 320px;
+                  background-color: transparent;
+                  color: white;
+                  outline: none;
+                "
+                onfocus="this.style.boxShadow='none'"
+                onblur="this.style.boxShadow='none'"
+              >
+              <button
+                type="submit"
+                style="background-color: transparent; color: white; padding: 10px 20px; border: 1px solid white; border-radius: 9999px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;"
+              >
+                <span>Search</span>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="white" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 5L20.5 19l-5-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z"/>
+                </svg>
+              </button>
+            </form>
+          {%- when 'text' -%}
+            <div class="banner__text rte {{ block.settings.text_style }}" {{ block.shopify_attributes }}>
+              <p>{{ block.settings.text }}</p>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Image banner with search",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image"
+    },
+    {
+      "type": "range",
+      "id": "image_overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_height",
+      "label": "Banner height",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "desktop_content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_container",
+      "label": "Use container",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "default": "Find what you're looking for",
+          "label": "Heading"
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "options": [
+            { "value": "h2", "label": "Small" },
+            { "value": "h1", "label": "Medium" },
+            { "value": "h0", "label": "Large" }
+          ],
+          "default": "h1",
+          "label": "Heading size"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "Your supporting text here"
+        },
+        {
+          "type": "select",
+          "id": "text_style",
+          "options": [
+            { "value": "body", "label": "Body" },
+            { "value": "subtitle", "label": "Subtitle" }
+          ],
+          "default": "body",
+          "label": "Text style"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image banner with search",
+      "blocks": [
+        { "type": "heading" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+
+    const suggestions = [
+      "diamond cross",
+      "9k bracelet",
+      "25mm hoops"
+    
+    ];
+
+    let currentIndex = 0;
+    let charIndex = 0;
+    let typing = true;
+
+    function type() {
+      if (!searchInput) return;
+
+      const currentText = suggestions[currentIndex];
+
+      if (typing) {
+        if (charIndex < currentText.length) {
+          searchInput.placeholder = currentText.substring(0, charIndex + 1);
+          charIndex++;
+          setTimeout(type, 50);
+        } else {
+          typing = false;
+          setTimeout(type, 1000); 
+        }
+      } else {
+        if (charIndex > 0) {
+          searchInput.placeholder = currentText.substring(0, charIndex - 1);
+          charIndex--;
+          setTimeout(type, 50);
+        } else {
+          typing = true;
+          currentIndex = (currentIndex + 1) % suggestions.length;
+          setTimeout(type, 500); 
+        }
+      }
+    }
+
+    type();
+  });
+</script>
+

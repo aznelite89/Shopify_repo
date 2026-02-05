@@ -1,0 +1,69 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "announcement_bar_8M3Vx9": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_DbHNQd": {
+          "type": "announcement",
+          "settings": {
+            "text": "Be quick to order! Orders dispatched same day*",
+            "link": "shopify://pages/shipping-policy"
+          }
+        }
+      },
+      "block_order": [
+        "announcement_DbHNQd"
+      ],
+      "settings": {
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "color_scheme": "",
+        "show_line_separator": true,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false
+      }
+    },
+    "1745972399e4824de0": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_position": "top-left",
+        "mobile_logo_position": "center",
+        "menu": "main-menu",
+        "menu_type_desktop": "mega",
+        "sticky_header_type": "always",
+        "show_line_separator": true,
+        "color_scheme": "background-1",
+        "menu_color_scheme": "scheme-1",
+        "enable_country_selector": false,
+        "enable_language_selector": false,
+        "enable_customer_avatar": true,
+        "margin_bottom": 0,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
+    }
+  },
+  "order": [
+    "announcement_bar_8M3Vx9",
+    "1745972399e4824de0",
+    "header"
+  ]
+}

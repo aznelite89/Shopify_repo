@@ -1,0 +1,71 @@
+{% # theme-check-disable ContentForHeaderModification %}
+
+{%- assign need_mask = request.page_type == 'product' and customer == nil -%}
+{%- assign cfh = raw_cfh | default: '' -%}
+
+{% if need_mask %}
+
+  {%- capture zw %}&#8203;{% endcapture %}
+
+  {%- comment -%} STEP 1: 砍掉 productVariants 数组 {%- endcomment -%}
+  {% if cfh contains '"productVariants":[' %}
+    {% assign p1   = cfh | split: '"productVariants":[' | first %}
+    {% assign rest = cfh | split: '"productVariants":[' | last  %}
+    {% assign p2   = rest | split: ']' %}   {# 只 split 第一个 ] #}
+    {% assign cfh  = p1
+      | append: '"productVariants":[]'
+      | append: ']'
+      | append: p2[1]
+    %}
+  {% endif %}
+
+  {%- comment -%} STEP 2: 覆盖 ShopifyAnalytics/trekkie meta 块 {%- endcomment -%}
+  {% assign start_token = 'var meta = {' %}
+  {% if cfh contains start_token %}
+    {% assign before = cfh | split: start_token | first %}
+    {% assign after  = cfh | split: start_token | last  %}
+    {% assign tail   = after | split: '};' %}
+    {%- comment -%} 用第一次 '};' 截断 {%- endcomment -%}
+    {% assign cfh = before
+      | append: 'var meta = {"product":{},"page":{}}'
+      | append: '};'
+      | append: tail[1]
+    %}
+  {% endif %}
+
+  {%- comment -%} STEP 3: 埋点事件字符串改名，避免被通用爬虫识别 {%- endcomment -%}
+  {% assign cfh = cfh
+    | replace: 'webPixelsManagerAPI.publish("product_viewed"', 'webPixelsManagerAPI.publish("product_viewed__masked"'
+    | replace: 'ShopifyAnalytics.lib.track("Viewed Product"', '/*hidden*/ShopifyAnalytics.lib.track("Viewed Product"'
+    | replace: 'monorail://trekkie_storefront_viewed_product', 'monorail://masked_storefront_viewed_product'
+  %}
+
+  {%- comment -%} STEP 4: OG/Product price meta 改名 {%- endcomment -%}
+  {% assign cfh = cfh
+    | replace: 'property="og:price:amount"',      'property="x-og-price-amount"'
+    | replace: 'property="og:price:currency"',    'property="x-og-price-currency"'
+    | replace: 'property="product:price:amount"', 'property="x-product-price-amount"'
+  %}
+
+  {%- comment -%} STEP 5: 兜底，给所有常见价格字段塞 0 + 零宽字符破坏正则 {%- endcomment -%}
+    {%- comment -%} STEP 5: 兜底（不再插零宽字符） {%- endcomment -%}
+    {% assign cfh = cfh
+    | replace: '"price":{"amount":',  '"price":{"amount":0'
+    | replace: '"price" :{"amount":','"price" :{"amount":0'
+    | replace: '"amount":',           '"amount":0'
+    | replace: '"price":',            '"price":0'
+    | replace: '"price_min":',        '"price_min":0'
+    | replace: '"price_max":',        '"price_max":0'
+    | replace: '"compare_at_price":', '"compare_at_price":0'
+    | replace: '"unit_price":',       '"unit_price":0'
+    | replace: '"price":"',           '"price":"__masked__'
+    %}
+
+  <!-- MASK_APPLIED -->
+  {{ cfh }}
+
+{% else %}
+  {{ cfh }}
+{% endif %}
+
+{% # theme-check-enable ContentForHeaderModification %}
