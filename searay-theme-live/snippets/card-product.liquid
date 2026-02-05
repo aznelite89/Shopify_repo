@@ -743,8 +743,7 @@ if (!window.__backorderInit) {
   window.__backorderInit = true;
 
 
-  const endpoint =
-    "https://searay-email-func.azurewebsites.net/api/SendBackOrder?code=__REMOVED_AZURE_FUNCTION_KEY__==";
+  const endpoint = "/apps/backorder";
 
   document.addEventListener("click", async e => {
     const btn = e.target.closest(".backorder-btn");
